@@ -1,6 +1,6 @@
 templateDir: deutschland_templates # For local use: ./local/deutschland_templates
 additionalProperties:
-  packageName: "autobahn"
+  packageName: "hilfsmittel"
   infoName: "BundesAPI"
   infoEmail: "kontakt@bund.dev"
   packageVersion: 1.0.0

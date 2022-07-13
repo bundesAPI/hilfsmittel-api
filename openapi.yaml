@@ -1,34 +1,544 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
-  description: "API Description"
-  version: "1.0.0"
-  title: "Amtsname: API Name"
-
+  title: Hilfsmittel-API
+  description: >-
+    Der GKV-Spitzenverbund führt ein Register über alle Hilfsmittel, die der Leistungspflicht der Kassen unterliegen.
+    Struktur: Produktgruppe -> Anwendungsort -> Untergruppe -> Produktart -> Produkt
+  version: 1.0.0
 servers:
-  - url: "https://warnung.bund.de/api31"
+  - url: 'https://hilfsmittel-api.gkv-spitzenverband.de/api/verzeichnis'
+components:
+  schemas:
+    Produkt:
+      type: object
+      description: Basis-Produkt.
+      properties:
+        organisationId:
+          type: string
+          description: TODO
+          example: d8adc813-22ac-4208-949f-9088a55e5740
+        produktartId:
+          type: string
+          description: ID der Produktart
+          example: e6b913ef-cf21-4c5f-826d-f866516c3c65
+        nummer:
+          type: integer
+          description: Fortlaufende Produktnummer
+          example: 1
+        name:
+          type: string
+          description: Name des Produkts
+          example: SERVOX Absaugkatheter
+        artikelnummern:
+          type: array
+          items:
+            type: string
+            example: '39752'
+          description: Liste von Artikelnummern
+        typenAusfuehrungen:
+          type: array
+          items:
+            type: string
+            example: SERVOX Absaugkatheter FT 50cm
+          example: Liste von Typausführungen
+        aufnahmeDatum:
+          type: string
+          format: date-time
+          description: Aufnahmedatum
+          example: '2019-08-21T22:00:00Z'
+        aenderungsDatum:
+          type: string
+          format: date-time
+          description: Datum der letzten Änderung
+          example: '2019-08-21T22:00:00Z'
+        zehnSteller:
+          type: string
+          description: Der Zehnsteller ist ein ID-System im Hilfsmittelverzeichnis
+          example: '01.24.01.0001'
+        herstellerName:
+          type: string
+          description: Name des Herstellers
+          example: Servona GmbH
+        istHerausgenommen:
+          type: boolean
+          description: TODO
+          example: true
+        istAbrechnungsposition:
+          type: boolean
+          description: TODO
+          example: false
+        id:
+          type: string
+          description: ID des Produkts
+          example: f41f52a6-5d2d-4dd3-9d0e-39675ceca7f3
+        displayName:
+          type: string
+          description: Angezeigter Name des Produkts (Kombination aus Zehnsteller und Name)
+          example: '01.24.01.0002 - HICO-Rapidovac 791-16; Art.-Nr.: 490060'
+    DetailProdukt:
+      allOf:
+        - $ref: '#/components/schemas/Produkt'
+        - type: object
+          properties:
+            produktgruppeNummer:
+              type: integer
+              description: Nummer der Produktgruppe
+              example: 1
+            anwendungsortNummer: 
+              type: integer
+              description: Nummer des Anwendungsortes
+              example: 24
+            untergruppeNummer:
+              type: integer
+              description: Nummer der Untergruppe
+              example: 1
+            produktartNummer:
+              type: integer
+              description: Nummer der Produktart
+              example: 0
+            produktartBezeichnung:
+              type: string
+              description: Name der Produktart
+            kontruktionsmerkmale:
+              type: array
+              description: Liste an Produkteigenschaften
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: Merkmal-ID
+                    example: 60395e9a-4698-407d-93d9-e98b59bc91b1
+                  label:
+                    type: string
+                    description: Bezeichnung der Eigenschaft
+                    example: Artikel
+                  valueType:
+                    type: string
+                    description: Art der Eigenschaft
+                    example: String
+                  value:
+                    type: string
+                    description: Wert der Eigenschaft
+                    example: portables Absauggerät für Netzbetrieb
+    Produktgruppe:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID der Produktgruppe
+          example: 2aefd212-3609-476f-8651-a4e02c9136e1
+        versionId:
+          type: string
+          description: Interne Versionierungs-ID
+          example: 5f1727ff-592f-46fd-9d34-c80e8d8b7af0
+        bezeichnung:
+          type: string
+          description: Bezeichnung der Produktgruppe
+          example: Pflegehilfsmittel zur selbständigeren Lebensführung/Mobilität
+        nummer:
+          type: integer
+          description: Nummer der Produktgruppe (erste Ziffern des Zehnstellers)
+          example: 52
+        definition:
+          type: string
+          description: Beschreibungstext zur Produktgruppe
+          example: Seit dem 1. Januar 2017 wird ein Pflegebedürftigkeitsbegriff angewendet, der sich an den gesundheitlich bedingten Beeinträchtigungen der Selbständigkeit und der Fähigkeiten eines Menschen bei der Bewältigung seines Alltags orientiert. Der Grad der Pflegebedürftigkeit wird mit dem Begutachtungsverfahren gemäß § 18 SGB XI festgestellt...
+        indikation:
+          type: string
+          description: Indikation der Produktgruppe, in der Regel Verweis auf die Produktarten
+          example: Siehe Produktarten
+        querverweis:
+          type: string
+          description: Textueller Querverweis auf andere Produktgruppen
+          example: '\n- Produktgruppe 21 „Messgeräte für Körperzustände“\n \n'
+        "isNnElement":
+          type: boolean
+          example: false
+          description: TODO
+        "sachbearbeiterGkvId":
+          type: string
+          example: 20c5c0c4-3680-430a-99d2-f236c8fb6b79
+          description: ID GKV-Sachbearbeiter:in
+        "sachbearbeiterGkv":
+          type: string
+          nullable: true
+          description: Immer null
+        "sachbearbeiterMdsId":
+          type: string
+          example: "ad2fa290-45dd-429d-8a88-74d1bae7ffe1"
+          description: ID MDS-Sachbearbeiter:in
+        "sachbearbeiterMds":
+          type: string
+          nullable: true
+          description: Immer null
+        "aufnahmeDatum":
+          type: string
+          format: date-time
+          example: "2021-04-12T22:00:00Z"
+          description: Aufnahmedatum der Produktgruppe
+        "aenderungsDatum": 
+          type: string
+          format: date-time
+          example: "2021-04-12T22:00:00Z"
+          description: Datum der letzten Änderung
+        "veroeffentlichungsDokumentFileStoreId":
+          type: string
+          example: "b5d091b8-f142-493f-818d-b1c2b9f7d2b7"
+          description: ID des Veröffentlichungsdokuments (Verwendung unklar)
+        "merkblattFileStoreId":
+          type: string
+          nullable: true
+          description: Immer null
+        "isCollectionReviewable":
+          type: boolean
+          example: false
+          description: Verwendung unbekannt
+        
+    Untergruppe:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID der Untergruppe
+          example: c92d1976-d3cb-4b9f-bcdf-805272a9ea86
+        versionId:
+          type: string
+          description: Versions-ID der Untergruppe (Verwendung unklar)
+          example: c92d1976-d3cb-4b9f-bcdf-805272a9ea86
+        nummer:
+          type: integer
+          description: Nummer der Untergruppe (letzte Position im Sechssteller)
+          example: 1
+        anwendungsortId:
+          type: string
+          description: ID des Anwendungsortes (Verwendung unklar)
+          example: 3a3863d1-e6b7-455e-b285-500d6c3a1e94
+        bezeichnung:
+          type: string
+          description: Bezeichnung der Untergruppe
+          example: Sekret-Absauggeräte, netzabhängig
+        produktgruppeId:
+          type: string
+          description: ID der Produktgruppe, zu der die Untergruppe gehört
+          example: 835f127b-8355-4ac4-90f8-e3b7ff80ba80
+        nachweisschemaId:
+          type: string
+          description: ID des zugehörigen Nachweisschemas
+          example: a3d37017-2c91-4d6d-bbbe-4002d2868044
+        sechsSteller:
+          type: string
+          description: Sechssteller der Untergruppe
+          example: '01.24.01'
+        isNnElement:
+          type: boolean
+          description: Verwendung unklar
+          example: false
+        produktgruppe:
+          type: number
+          nullable: true
+          description: Immer null (kann aus Sechssteller extrahiert werden)
+        anwendungsort:
+          type: number
+          nullable: true
+          description: Immer null (kann aus Sechssteller extrahiert werden)
+        aufnahmeDatum:
+          type: string
+          format: date-time
+          example: '2018-08-27T22:00:00Z'
+          description: Aufnahmedatum der Untergruppe
+        aenderungsDatum:
+          type: string
+          format: date-time
+          example: '2018-08-27T22:00:00Z'
+          description: Datum der letzten Änderung
 
+    Produktart:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID der Produktart
+          example: e6b913ef-cf21-4c5f-826d-f866516c3c65
+        versionId:
+          type: string
+          description: Versions-ID (Verwendung unbekannt)
+          example: e6b913ef-cf21-4c5f-826d-f866516c3c65
+        nummer:
+          type: integer
+          description: Nummer der Produktart (letzte Komponente Siebensteller)
+          example: 0
+        beschreibung:
+          type: string
+          description: Beschreibungstext der Produktart
+          example: Sekret-Absauggeräte bestehen aus einem elektrischen Grundgerät - der Saugpumpe - und dem eigentlichen Sauginstrument, bestehend aus Schlauchsystem, Sekretbehälter und Absaugkatheter.\n\nDie verwendeten Membran- und Kolbenpumpen sind grundsätzlich wartungsfrei....
+        bezeichnung:
+          type: string
+          description: Name der Produktart
+          example: Sekret-Absauggerät mit geringer Saugleistung, netzabhängig
+        untergruppeId:
+          type: string
+          description: ID der Untergruppe, zu der die Produktart gehört
+          example: c92d1976-d3cb-4b9f-bcdf-805272a9ea86
+        indikation:
+          type: string
+          description: Indikation der Produktart
+          example: 'Schädigung der Atmungs-/Hustenfunktion mit Störung der trachealen, bronchialen oder oralen Sekretelimination bei dauerhaft leicht abzusaugendem (flüssigen) Sekret bei: ...'
+        siebenSteller:
+          type: string
+          description: Siebensteller der Produktart
+          example: '01.24.01.0'
+        isNnElement:
+          type: boolean
+          example: false
+          description: Verwendung unklar
+        konstruktionsmerkmalschemaId:
+          type: string
+          example: 01e46a00-64e5-4ec1-bf2e-40447774ff96
+          description: TODO Verwendung unklar
+        untergruppe:
+          type: integer
+          nullable: true
+          description: Immer null (kann aus Siebensteller extrahiert werden)
+        aufnahmeDatum:
+          type: string
+          format: date-time
+          example: '2018-08-27T22:00:00Z'
+          description: Aufnahmedatum der Produktart
+        aenderungsDatum:
+          type: string
+          format: date-time
+          example: '2018-08-27T22:00:00Z'
+          description: Datum der letzten Änderung
+
+    Nachweisschema:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID des Nachweisschemas
+          example: a3d37017-2c91-4d6d-bbbe-4002d2868044
+        name:
+          type: string
+          description: Name des Nachweisschemas
+          example: Nachweisschema für Untergruppe 01.24.01 (Sekret-Absauggeräte, netzabhängig)
+        produktmusterErforderlich:
+          type: boolean
+          example: false
+        nachweisschemaKategorieZuweisungen:
+          type: array
+          items:
+            type: object
+            properties:
+              nachweiskategorieId:
+                type: string
+                description: ID der Nachweiskategorie
+                example: d47f2e17-45fb-4030-841f-acd5d1fcee95
+              nachweiskategorie:
+                type: string
+                description: Beschreibung der Nachweiskategorie
+                example: Herstellererklärung
+              nachweisIstErforderlich:
+                type: boolean
+                example: true
+              description:
+                type: string
+                nullable: true
+                description: Immer null
+              isUploadable:
+                type: boolean
+                example: true
+                description: Verwendung unklar
+        nachweisAbschnittAnforderungen:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID der Nachweisanforderung
+                example: 8abbe858-e902-4876-a8fb-0125004d2f9a
+              abschnittId:
+                type: string
+                description: ID der Nachweisanforderung (Verwendung unklar, selbe Kardinalität wie id)
+                example: 052ba504-f00d-43a5-b039-94c08cf95de6
+              bezeichnung:
+                type: string
+                description: Bezeichnung des Nachweisabschnitts
+                example: VII.2 Auswahl des Produktes
+              order:
+                type: integer
+                description: Verwendung unklar
+                example: 7020
+              isVisible:
+                type: boolean
+                example: false
+                description: Verwendung unklar
+              isComplete:
+                type: boolean
+                example: false
+                description: Verwendung unklar
+              abschnittAnforderungen:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    abschnittAnforderungId:
+                      type: string
+                      description: ID des Nachweisanforderungsabschnitts
+                      example: 70055a23-ff91-42ea-9471-bd51a11443f0
+                    anforderungType:
+                      type: integer
+                      example: 1
+                      description: Verwendung unklar
+                    anforderungText:
+                      type: string
+                      description: Beschreibung der Anforderung
+                      example: Lieferung des Hilfsmittels inklusive des erforderlichen Zubehörs in die Häuslichkeit der Versicherten oder des Versicherten; bei Bedarf nach Terminvereinbarung
+                    order:
+                      type: integer
+                      example: 1
+                      description: Sortierung der verschiedenen Anforderungsabschnitte
+    BaumKnoten:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID des Knotens
+          example: 835f127b-8355-4ac4-90f8-e3b7ff80ba80
+        parentId:
+          type: string
+          nullable: true
+          description: ID des Elternknotens
+          example: 45d10433-eb9f-4a6d-ad89-f9fdebfb7c5a
+        displayValue:
+          type: string
+          description: Bezeichnung des Knotens
+          example: 24 - Atmungsorgane
+        xStellerDisplayValue:
+          type: string
+          description: Bezeichnung des zum Knoten gehörigen xStellers (z.B. Zweisteller für oberste Produktkategorie)
+          example: 01.24 - Atmungsorgane
+        xSteller:
+          type: string
+          description: xSteller des Knotens
+          example: '01.24'
+        level:
+          type: integer
+          description: Level des Knotens im Baum
+          example: 2
 paths:
-  /dashboard/{AGS}.json:
+  /VerzeichnisTree/{level}:
     get:
-      summary: Name des Endpoints
-      responses:
-        '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Result'
+      summary: Lädt alle Knoten im Produktbaum bis zum gegebenen Level.
       parameters:
         - in: path
+          name: level
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
           required: true
-          name: AGS
+      responses:
+        '200':
+          description: Liste an Knoten aus dem Produktbaum
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaumKnoten'
+  /Produktgruppe/{id}:
+    get:
+      summary: Details zu einer Produktgruppe abfragen
+      parameters:
+        - in: path
+          name: id
           schema:
             type: string
-          description: Amtlicher Gebietsschlüssel - kann z.B. von [hier](https://www.xrepository.de/api/xrepository/urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:rs_2021-07-31/download/Regionalschl_ssel_2021-07-31.json) bezogen werden. Die Letzten 7 Stellen müssen dabei mit "0000000" ersetzt werden, weil die Daten nur auf [Kreisebene](https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel) bereitgestellt werden. 
-          example: "example-parameter"
-
-          
-components: 
-    schemas:
-      Result:
-        type: string
+          required: true
+      responses:
+        '200':
+          description: Detailinformationen zu einer Produktgruppe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produktgruppe'
+  /Untergruppe/{id}:
+    get:
+      summary: Details zu einer Untergruppe abfragen
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Detailinformationen zu einer Untergruppe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Untergruppe'
+  /Produktart/{id}:
+    get:
+      summary: Details zu einer Produktart abfragen
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Detailinformationen zu einer Produktart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produktart'
+  /Produkt:
+    get:
+      summary: Kompaktliste aller Produkte
+      description: Achtung, Rückgabe ist relativ groß (über 30MB).
+      responses:
+        '200':
+          description: Kompaktliste aller Produkte
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Produkt'
+  /Produkt/{id}:
+    get:
+      summary: Details zu einem Produkt abfragen
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Detailinformationen zu einem Produkt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailProdukt'
+  /Nachweisschema/{id}:
+    get:
+      summary: Details zu einem Nachweisschema abfragen
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Detailinformationen zu einem Nachweisschema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nachweisschema'

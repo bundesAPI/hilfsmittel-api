@@ -40,7 +40,10 @@ components:
           items:
             type: string
             example: SERVOX Absaugkatheter FT 50cm
-          example: Liste von Typausführungen
+          example:
+            - Liste
+            - von
+            - Typausführungen
         aufnahmeDatum:
           type: string
           format: date-time

@@ -22,3 +22,11 @@ Zusätzlich zu den verschiedenen IDs (die in der Regel UUIDs sind) haben alle Kn
 * **Untergruppe**: Sechssteller (z.B. `01.24.01`)
 * **Produktart**: Siebensteller (z.B. `01.24.01.0`)
 * **Produkt**: Zehnsteller (z.B. `01.24.01.0002`)
+
+## Beispiel 
+
+```bash
+produktgruppen=$(curl https://hilfsmittel-api.gkv-spitzenverband.de/api/verzeichnis/VerzeichnisTree/1)
+produkte=$(curl https://hilfsmittel-api.gkv-spitzenverband.de/api/verzeichnis/Produkt)
+produkt=$(curl https://hilfsmittel-api.gkv-spitzenverband.de/api/verzeichnis/Produkt/a7c4a796-6f96-42fb-971b-d2947549707d)
+```
